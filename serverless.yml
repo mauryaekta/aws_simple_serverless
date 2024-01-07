@@ -1,0 +1,127 @@
+service: serverless-node
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-west-2
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: "dynamodb:*"
+          Resource: "*"
+        - Effect: Allow
+          Action: "s3:*"
+          Resource: "*"
+
+functions:
+  createUserAPI:
+    handler: handlers/users/createUser.handler
+    events:
+      - http:
+          path: create
+          method: post
+          integration: lambda-proxy
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Access-control-Allow-Origin
+              - Access-Control-Allow-Headers
+
+  getAllUser:
+    handler: handlers/users/getUser.handler
+    events:
+      - http:
+          path: getAll
+          method: get
+          integration: lambda-proxy
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Access-control-Allow-Origin
+              - Access-Control-Allow-Headers
+
+  getUserById:
+    handler: handlers/users/getUserById.handler
+    events:
+      - http:
+          path: getUserById/{id}
+          method: get
+          integration: lambda-proxy
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Access-control-Allow-Origin
+              - Access-Control-Allow-Headers
+
+  updateUser:
+    handler: handlers/users/updateUser.handler
+    events:
+      - http:
+          path: update/{id}
+          method: put
+          integration: lambda-proxy
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Access-control-Allow-Origin
+              - Access-Control-Allow-Headers
+
+  deleteUser:
+    handler: handlers/users/deleteUser.handler
+    events:
+      - http:
+          path: delete/{id}
+          method: delete
+          integration: lambda-proxy
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Access-control-Allow-Origin
+              - Access-Control-Allow-Headers
+
+resources:
+  Resources:
+    userTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: userTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
